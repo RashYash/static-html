@@ -1,0 +1,93 @@
+<button>
+  Get Your City
+</button>
+
+<script type="module">
+  // fetch and parse cities
+  const data = await fetch("cities.json").then(resp => resp.json())
+  console.log(data);
+
+  const cities = [];
+
+  Object.keys(data).forEach(district => {
+    const districtCities = data[district];
+
+    Object.keys(districtCities).forEach(cityName => {
+      const cityData = districtCities[cityName];
+      cities.push({
+        district: district,
+        city: cityName,
+        lat: cityData.latitude,
+        lon: cityData.longitude
+      });
+    });
+  });
+
+  const onSuccess = data => {
+    // enabled button again
+    button.disabled = false
+    // get current coordinate values
+    const latitude = data.coords.latitude
+    const longitude = data.coords.longitude
+    // use latitude and longitude
+    console.log({ latitude, longitude })
+    // TODO : display your nearest city from data
+
+    //haversine formulae maths part
+    function haversine(lat1, lon1, lat2, lon2) {
+      let dLat = (lat2 - lat1) * Math.PI / 180.0;
+      let dLon = (lon2 - lon1) * Math.PI / 180.0;
+
+      // Convert to radians
+      lat1 = (lat1) * Math.PI / 180.0;
+      lat2 = (lat2) * Math.PI / 180.0;
+
+      // Haversine formula
+      let a = Math.pow(Math.sin(dLat / 2), 2) +
+        Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+      let rad = 6371; // Earth's radius in km
+      let c = 2 * Math.asin(Math.sqrt(a));
+      return rad * c; // distance in km
+    }
+
+    let nearestCity = null;
+    let minDistance = Infinity;
+
+    cities.forEach(city => {
+      const distance = haversine(latitude, longitude, city.lat, city.lon);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCity = city;
+      }
+    });
+
+    console.log("Nearest city: " + nearestCity.city + " (" + minDistance.toFixed(2) + " km)");
+
+  };
+
+  // geolocation error callback
+  const onError = error => {
+    // enabled button again
+    button.disabled = false
+    console.log("error", error)
+  }
+
+  // get button element
+  const button = document.querySelector("button")
+
+  // check if geolocation available
+  if ("geolocation" in navigator) {
+    // click event listener
+    button.addEventListener("click", () => {
+      // disable button
+      button.disabled = true
+      // request geolocation data
+      navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+        enableHighAccuracy: true
+      })
+    })
+  } else {
+    // disable button
+    button.disabled = true
+  }
+</script>
