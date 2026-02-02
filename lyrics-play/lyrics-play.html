@@ -1,0 +1,76 @@
+<style>
+  audio {
+    width: 600px;
+  }
+</style>
+
+<audio controls></audio>
+
+<div>
+  Lyrics will be displayed here...
+</div>
+
+<script type="module">
+  // load lyrics text content
+  const text = await fetch("./song.vtt").then(resp => resp.text())
+  // split lyrics text into lines
+  const lines = text.split("\r\n")
+  // TODO: populate an object array of lyric lines
+  // format : [{ from: number, to: number, text: string }, ...]
+  const lyrics = [];
+
+  function timeToSeconds(time) {
+    const [h, m, s] = time.split(":");
+    return (+h * 3600) + (+m * 60) + (+s);
+  }
+
+  let current = null;
+
+  lines.forEach(line => {
+
+    if (line.includes("-->")) {
+      const [start, end] = line.split(" --> ");
+
+      current = {
+        from: timeToSeconds(start),
+        to: timeToSeconds(end),
+        text: ""
+      };
+    }
+
+    else if (line.trim() !== "" && current) {
+      current.text = line;
+      lyrics.push(current);
+      current = null;
+    }
+  });
+  console.log(lyrics);
+
+  // get lyrics display element
+  const lyricsElement = document.querySelector("div")
+
+  // get audio element
+  const audioElement = document.querySelector("audio")
+
+  // fetch audio file as blob
+  const blob = await fetch("./song.mp3").then(resp => resp.blob())
+  // set blob for the audio element
+  audioElement.src = URL.createObjectURL(blob)
+
+  // listen to audio element for its time change
+  audioElement.addEventListener("timeupdate", () => {
+    // read current time from audio
+    console.log(audioElement.currentTime.toFixed(2))
+    // TODO: find current lyrics line and display
+    const currentTime = audioElement.currentTime;
+
+    const currentLyric = lyrics.find(line =>
+      currentTime >= line.from && currentTime <= line.to
+    );
+
+    if (currentLyric) {
+      lyricsElement.textContent = currentLyric.text;
+    }
+  })
+
+</script>
