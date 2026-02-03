@@ -1,0 +1,35 @@
+<script type="module">
+    const words = await fetch("english-words.json").then(resp => resp.json());
+
+    function searchWord(format) {
+
+        const results = [];
+
+        words.forEach(word => {
+
+            if (word.length !== format.length) {
+                return;
+            }
+
+            for (let i = 0; i < format.length; i++) {
+                if (format[i] !== "_" && format[i] !== word[i]) {
+                    return;
+                }
+            }
+
+            results.push(word);
+        });
+
+        console.log(`Matches for "${format}":`, results);
+
+        if (results.length === 0) {
+            return null;
+        }
+
+        const randomItem = results[Math.floor(Math.random() * results.length)];
+        return randomItem;
+    }
+    console.log("Random result:", searchWord("c_t"));
+    console.log("Random result:", searchWord("a_l"));
+    console.log("Random result:", searchWord("a_"));
+</script>
