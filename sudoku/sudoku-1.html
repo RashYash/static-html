@@ -1,0 +1,80 @@
+<script>
+    // example 2d grid created from createGrid
+    /*const arr = [
+        [2, 1, 4, 3],
+        [3, 4, 1, 2],
+        [1, 3, 2, 4],
+        [4, 2, 3, 1]
+    ]
+
+    /**
+     * Solution Steps
+     * 
+     * 1. Create a random 2D array (grid)
+     * 2. Validate grid
+     * 3. Return grid if valid
+     * 4. Else restart step #1
+    */
+
+    function createRandomRow() {
+        return [1, 2, 3, 4].sort(() => Math.random() - 0.5)
+    }
+
+    function createGrid() {
+        // use createRandomRow 4 times
+        // return grid => number[][]
+        let grid = [];
+
+        for (let i = 0; i < 4; i++) {
+            grid.push(createRandomRow());
+        }
+
+        return grid;
+    }
+
+
+    function validatePuzzle(grid) {
+        // check: should not repeat same digit in a single column
+        for (let col = 0; col < 4; col++) {
+            let checked = new Set();
+
+            for (let row = 0; row < 4; row++) {
+                if (checked.has(grid[row][col])) {
+                    return false;
+                }
+                checked.add(grid[row][col]);
+            }
+        }
+        // check: should not repeat same digit in a 2 x 2 grid
+        for (let boxRow = 0; boxRow < 4; boxRow += 2) {
+            for (let boxCol = 0; boxCol < 4; boxCol += 2) {
+
+                let checked = new Set();
+
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 2; c++) {
+
+                        if (checked.has(grid[boxRow + r][boxCol + c])) {
+                            return false;
+                        }
+                        checked.add(grid[boxRow + r][boxCol + c]);
+                    }
+                }
+            }
+        }
+        // return true | false
+        return true;
+    }
+
+    // for now
+    const grid_1 = createGrid()
+    const valid_1 = validatePuzzle(grid_1)
+    console.table(grid_1)
+    console.log("isValid", valid_1)
+
+    const grid_2 = createGrid()
+    const valid_2 = validatePuzzle(grid_2)
+    console.table(grid_2)
+    console.log("isValid", valid_2)
+
+</script>
