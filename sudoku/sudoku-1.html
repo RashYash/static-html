@@ -67,7 +67,7 @@
     }
 
     // for now
-    const grid_1 = createGrid()
+    /*const grid_1 = createGrid()
     const valid_1 = validatePuzzle(grid_1)
     console.table(grid_1)
     console.log("isValid", valid_1)
@@ -76,5 +76,44 @@
     const valid_2 = validatePuzzle(grid_2)
     console.table(grid_2)
     console.log("isValid", valid_2)
+    */
 
+    function generateValidSudoku() {
+        let grid;
+        let tries = 0;
+        do {
+            grid = createGrid();
+            tries++;
+        } while (!validatePuzzle(grid));
+        return { grid, tries };   
+    }
+
+    function generatePuzzle(answer) {
+        const puzzle = [...answer.map(row => [...row])];
+
+        for (let boxRow = 0; boxRow < 4; boxRow += 2) {
+            for (let boxCol = 0; boxCol < 4; boxCol += 2) {
+
+                let keepR = Math.floor(Math.random() * 2);
+                let keepC = Math.floor(Math.random() * 2);
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 2; c++) {
+                        if (!(r === keepR && c === keepC)) {
+                            puzzle[boxRow + r][boxCol + c] = null;
+                        }
+                    }
+                }
+            }
+        }
+        return puzzle;
+    }
+
+    const result = generateValidSudoku();
+    const answer = result.grid;
+    const puzzle = generatePuzzle(answer);
+
+    console.log("Sudoku Answer:");
+    console.table(answer);
+    console.log("Sudoku Puzzle:");
+    console.table(puzzle);
 </script>
