@@ -1,0 +1,125 @@
+<script type="module">
+    //STUDY:
+
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in
+
+    //1. Load animals.json file using fetch
+
+    const data = await fetch("animals.json").then(res => res.json());
+
+    /*2. Count how many available of these:
+    - Classes
+    - Families
+    - Kingdoms*/
+
+    const kingdomSummary = {};
+    const classSummary = {};
+    const familySummary = {};
+
+    let minLife = Infinity;
+    let maxLife = 0;
+
+    let minAnimal = "";
+    let maxAnimal = "";
+
+    for (const letter in data) {
+        for (const animalName in data[letter]) {
+
+            const animal = data[letter][animalName];
+
+            if (!animal.Classification) {
+                //console.log(animalName, "- No Classification");
+                continue;
+            }
+
+            if ("Kingdom" in animal.Classification) {
+                const kingdom = animal.Classification.Kingdom;
+                //console.log(animalName, "- Kingdom:", kingdom);
+
+                kingdomSummary[kingdom] = (kingdomSummary[kingdom] || 0) + 1;
+            } else {
+                //console.log(animalName, "- Kingdom missing");
+            }
+
+            if ("Class" in animal.Classification) {
+                const animalClass = animal.Classification.Class;
+                //console.log(animalName, "- Class:", animalClass);
+
+                classSummary[animalClass] = (classSummary[animalClass] || 0) + 1;
+            } else {
+                //console.log(animalName, "- Class missing");
+            }
+
+            if ("Family" in animal.Classification) {
+                const family = animal.Classification.Family;
+                //console.log(animalName, "- Family:", family);
+
+                familySummary[family] = (familySummary[family] || 0) + 1;
+            } else {
+                //console.log(animalName, "- Family missing");
+            }
+
+
+            /*3. Find Lifespans
+    - Maximum - Display Name / Duration
+    - Minimum - Display Name / Duration*/
+            const charac = data[letter][animalName].Characteristics;
+
+            if (!charac || !charac.Lifespan) {
+                //console.log(animalName, "- No Characteristics or Lifespan");
+                continue;
+            }
+
+            const text = charac.Lifespan.toLowerCase();
+            //console.log(animalName, "lifespan:", text);
+
+
+            const value = parseFloat(text);
+            if (isNaN(value)) continue;
+
+            let days = 0;
+
+
+            if (text.includes("year")) {
+                days = value * 365;
+            }
+            else if (text.includes("month")) {
+                days = value * 30;
+            }
+            else if (text.includes("day")) {
+                days = value;
+            }
+            else {
+                continue;
+            }
+
+            //console.log(animalName, "Converted to days:", days);
+
+            if (days < minLife) {
+                minLife = days;
+                minAnimal = animalName;
+            }
+
+            if (days > maxLife) {
+                maxLife = days;
+                maxAnimal = animalName;
+            }
+
+
+            /*3. Find Speed
+    - Maximum - Display Name / Speed
+    - Minimum - Display Name / Speed*/
+    //ToDo
+        }
+    }
+
+
+    console.log("First question-Summarization:");
+    console.log("Kindom summary:", kingdomSummary);
+    console.log("Class summary:", classSummary);
+    console.log("Family summary:", familySummary);
+
+    console.log("Second question-Lifespan Information about animals:");
+    console.log("MIN lifespan:", minAnimal, "-", minLife, "days");
+    console.log("MAX lifespan:", maxAnimal, "-", maxLife, "days");
+</script>
