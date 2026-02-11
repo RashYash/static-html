@@ -1,0 +1,83 @@
+<script type="module">
+  // TODO
+  const data = await fetch("animals.json").then(res => res.json());
+
+  //Task #1: Create method to calculate lifespan and speed
+  //function toLifespan(text) => return {number in days}
+  function toLifespan(text) {
+    if (!text) return null;
+
+    const value = parseFloat(text);
+    if (isNaN(value)) return null;
+
+    text = text.toLowerCase();
+
+    if (text.includes("year"))
+      return value * 365;
+
+    if (text.includes("month"))
+      return value * 30;
+
+    if (text.includes("day"))
+      return value;
+
+    return null;
+  }
+  //function toSpeed(text) => return {number in mph}
+  function toSpeed(text) {
+    if (!text) return null;
+
+    const value = parseFloat(text);
+    if (isNaN(value)) return null;
+
+    return value;
+  }
+  /*Task #2: Categorize animals by class
+  * Output format: [
+  *  className: string,
+  *  animals: [
+  *    {
+  *      animalName: string,
+  *      animalKingdom: string,
+  *      animalLifespan: number,
+  *      animalSpeed: number
+  *    }
+  *  ]
+  * ]
+  */
+  const animalsByClass = {};
+
+  Object.keys(data).forEach(letter => {
+
+    Object.keys(data[letter]).forEach(animalName => {
+
+      const animal = data[letter][animalName];
+
+
+      if (!animal.Classification || !animal.Classification.Class)
+        return;
+
+      const className = animal.Classification.Class;
+      const kingdom = animal.Classification.Kingdom || "Unknown";
+
+      const charac = animal.Characteristics || {};
+
+      const lifespan = toLifespan(charac.Lifespan);
+      const speed = toSpeed(charac["Top Speed"]);
+
+      if (!animalsByClass[className]) {
+        animalsByClass[className] = [];
+      }
+      animalsByClass[className].push({
+        animalName: animalName,
+        animalKingdom: kingdom,
+        animalLifespan: lifespan,
+        animalSpeed: speed
+      });
+
+    });
+
+  });
+  console.log(animalsByClass);
+
+</script>
